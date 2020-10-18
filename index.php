@@ -28,18 +28,87 @@ and open the template in the editor.
                 width: 1024px;
                 background-color: white;                
                 margin: auto;
-                padding: 5% 0 5% 0;
+                padding: 2% 0 4% 0;
                 text-align: center;
             }
-                                    
+            
+            #cabecalho
+            {
+                width: 100%;                                               
+                margin: auto;
+                padding-bottom: 2%;                
+            }
+            
+            #cabecalho img
+            {
+                width: 50%;
+                margin: 0;
+            }
+                                   
+            #filtros-1
+            {
+                width: 100%;
+                height: 20rem;                              
+                margin: auto;               
+                background-color: rgb(51, 51, 51);
+            }
+            
+            #filtros-2
+            {
+                width: 100%;
+                height: 20rem;                           
+                margin: auto;
+                margin-bottom: 6%;
+                background-color: rgb(150, 150, 150);
+            }
+            
+            #pokemons
+            {
+                width: 100%;                             
+                margin: 0;
+                margin: auto;                
+            }
+            
+            #load-pokemons
+            {
+                padding: 2% 4% 2% 4%;
+                background-color: rgb(0, 102, 255);
+                border: none;
+                color: white;
+                font-size: 5rem;
+                border-radius: 2rem;
+                cursor: pointer;
+                display: block;
+                margin: auto;
+            }
+            
+            #load-pokemons:hover
+            {
+                background-color: rgb(0, 92, 153);
+            }
+            
+            #load-pokemons:focus
+            {
+                border: none;
+                outline: none;
+            }
+            
+            #load-gif
+            {
+                width: 20%;
+                margin: 0;
+                display: none;
+                margin-top: -5%;
+            }
+                                              
             .pokemon
             {
                 display: inline-table;
                 width: 20%;   
                 text-align: left;
-                padding: 0 1% 8% 1%;
+                padding: 0 1% 6% 1%;
             }
-                                    
+                                            
             .pokemon img
             {
                 width: 100%;
@@ -67,7 +136,7 @@ and open the template in the editor.
             .pokemon-type
             {
                 width: 20%;                
-                background-color: green;
+                background-color: white;
                 font-size: 3rem;
                 padding: 2% 8% 2% 8%;
                 border-radius: 4px;
@@ -75,8 +144,7 @@ and open the template in the editor.
                 vertical-align: middle;
                 display: inline-block;
                 margin: 0 2% 0 0;  
-                text-align: center;
-                color: white;
+                text-align: center;                
             }
             
         </style>
@@ -85,14 +153,11 @@ and open the template in the editor.
         
         <script>
             
+            pokemons_arr = [];            
+            index = 1;
+            
             function getPokemon(id) 
-            {
-                
-                /*$("button").click(function(){
-                $.ajax({url: "demo_test.txt", success: function(result){
-                  $("#div1").html(result);
-                }});
-              });*/
+            {                
                 $.post("controllers/PokemonController.php",
                 {
                   acao: "getPokemon",
@@ -103,47 +168,130 @@ and open the template in the editor.
                    
                     var types = "";
                         
-                    for(var j=0; j<pokemon.types.length; j++)
-                    {
-                        types = types.concat("<div class='pokemon-type'>" + pokemon.types[j] + "</div>");
-                    }
-                   
-                   $("#content").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "</h2>" + types + "</div>");
+                    pokemon.types.forEach(function(type)
+                    {                            
+                        
+                        
+                        types = types.concat("<div class='pokemon-type'>" + type + "</div>");                       
+                    });    
+                                     
+                   $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "</h2>" + types + "</div>");
                 });                
             }
             
             function getNext12(start_id) 
-            {                
+            {     
+                $("#load-pokemons").hide();
+                $("#load-gif").show();
+                
                 $.post("controllers/PokemonController.php",
                 {
                   acao: "getNext12",
                   start_id: start_id
                 },
-                function(data, status){
+                function(data)
+                {
                     var pokemons = JSON.parse(data);
-                    for(var i=0; i<pokemons.length; i++)
+                    
+                    pokemons.forEach(function(pokemon)
                     {
-                        var types = "";
-                        
-                        for(var j=0; j<pokemons[i].types.length; j++)
-                        {
-                            types = types.concat("<div class='pokemon-type'>" + pokemons[i].types[j] + "</div>");
-                        }
-                                                                        
-                        $("#content").append("<div class='pokemon'><img src='" + pokemons[i].img + "' alt=''><p>Nº " + pokemons[i].number + "</p><h2>" + pokemons[i].name + "</h2>" + types + "</div>");
-                    }
-                });                
+                        pokemons_arr.push(pokemon);                     
+                    });
+                    
+                    index += pokemons.length;
+                    
+                    showPokemons();
+                    
+                    $("#load-pokemons").show();
+                    $("#load-gif").hide();
+                });            
             }
             
-            //getPokemon(800);
+            function showPokemons()
+            {
+                //pokemons_arr.sort(compareAZ);
+                
+                $("#pokemons").html("");
+                
+                pokemons_arr.forEach(function(pokemon)
+                {
+                    var types = "";
+                    pokemon.types.forEach(function(type)
+                    {   
+                        switch(type) 
+                        {
+                            case 'Grass':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #88cc00; color: black'>" + type + "</div>");
+                                break;
+                            case 'Water':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #3399ff; color: white'>" + type + "</div>");
+                                break;
+                            case 'Poison':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #9966ff; color: white'>" + type + "</div>");
+                                break;
+                            case 'Fire':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #ff6600; color: white'>" + type + "</div>");
+                                break;
+                            case 'Flying':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #66ffff; color: black'>" + type + "</div>");
+                                break;
+                            case 'Bug':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #339933; color: white'>" + type + "</div>");
+                                break;
+                            case 'Normal':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #bfbfbf; color: black'>" + type + "</div>");
+                                break;
+                            case 'Electric':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #ffcc00; color: black'>" + type + "</div>");
+                                break;
+                            case 'Ground':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #cc9900; color: black'>" + type + "</div>");
+                                break;
+                            case 'Fairy':
+                                types = types.concat("<div class='pokemon-type' style='background-color: #ffcccc; color: black'>" + type + "</div>");
+                                break;
+                            default:
+                                types = types.concat("<div class='pokemon-type'>" + type + "</div>");
+                        }                                               
+                    });
+                    
+                    console.log(pokemon.name);
+                    
+                    $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "</h2>" + types + "</div>");
+                });
+            }
             
-            getNext12(140);
-        
+            function compareAZ(a, b)
+            {
+                return a.name.localeCompare(b.name);
+            }
+            
+            function compareZA(a, b)
+            {
+                return b.name.localeCompare(a.name);
+            }
+            
+            $(document).ready(function(){
+                $("#load-pokemons").click(function(){
+                    getNext12(index);
+                });
+                
+                getNext12(index);
+            });
+                      
         </script>
         
     </head>
     <body>
-        <div id="content">            
+        <div id="content">   
+            <div id="cabecalho">
+                <img src="img/pokedex-logo.png" alt="">
+            </div>            
+            <div id="filtros-1"></div>
+            <div id="filtros-2"></div>
+            <div id="pokemons"></div>
+            <input type="button" id="load-pokemons" value="Carregar mais Pokémons!">
+            <img id="load-gif" src="https://icon-library.com/images/loading-icon-animated-gif/loading-icon-animated-gif-15.jpg" alt="">
         </div>
     </body>
 </html>
