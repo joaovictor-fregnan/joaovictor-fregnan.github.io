@@ -31,7 +31,7 @@ and open the template in the editor.
                 padding: 5% 0 5% 0;
                 text-align: center;
             }
-            
+                                    
             .pokemon
             {
                 display: inline-table;
@@ -69,61 +69,81 @@ and open the template in the editor.
                 width: 20%;                
                 background-color: green;
                 font-size: 3rem;
-                padding: 1% 8% 1% 8%;
+                padding: 2% 8% 2% 8%;
                 border-radius: 4px;
                 line-height: 1;
                 vertical-align: middle;
                 display: inline-block;
                 margin: 0 2% 0 0;  
                 text-align: center;
+                color: white;
             }
             
         </style>
+        
+        <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+        
+        <script>
+            
+            function getPokemon(id) 
+            {
+                
+                /*$("button").click(function(){
+                $.ajax({url: "demo_test.txt", success: function(result){
+                  $("#div1").html(result);
+                }});
+              });*/
+                $.post("controllers/PokemonController.php",
+                {
+                  acao: "getPokemon",
+                  id: id
+                },
+                function(data, status){
+                    var pokemon = JSON.parse(data); 
+                   
+                    var types = "";
+                        
+                    for(var j=0; j<pokemon.types.length; j++)
+                    {
+                        types = types.concat("<div class='pokemon-type'>" + pokemon.types[j] + "</div>");
+                    }
+                   
+                   $("#content").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "</h2>" + types + "</div>");
+                });                
+            }
+            
+            function getNext12(start_id) 
+            {                
+                $.post("controllers/PokemonController.php",
+                {
+                  acao: "getNext12",
+                  start_id: start_id
+                },
+                function(data, status){
+                    var pokemons = JSON.parse(data);
+                    for(var i=0; i<pokemons.length; i++)
+                    {
+                        var types = "";
+                        
+                        for(var j=0; j<pokemons[i].types.length; j++)
+                        {
+                            types = types.concat("<div class='pokemon-type'>" + pokemons[i].types[j] + "</div>");
+                        }
+                                                                        
+                        $("#content").append("<div class='pokemon'><img src='" + pokemons[i].img + "' alt=''><p>Nº " + pokemons[i].number + "</p><h2>" + pokemons[i].name + "</h2>" + types + "</div>");
+                    }
+                });                
+            }
+            
+            //getPokemon(800);
+            
+            getNext12(140);
+        
+        </script>
+        
     </head>
     <body>
-        <div id="content">
-            <div class="pokemon">
-                <img src="img/bulbasaur.png" alt="">
-                <p>Nº001</p>
-                <h2>Bulbasaur</h2>
-                <div class="pokemon-type">Grass</div>
-                <div class="pokemon-type">Poison</div>
-            </div>
-            <div class="pokemon">
-                <img src="img/bulbasaur.png" alt="">
-                <p>Nº001</p>
-                <h2>Bulbasaur</h2>
-                <div class="pokemon-type">Grass</div>
-                <div class="pokemon-type">Poison</div>
-            </div>
-            <div class="pokemon">
-                <img src="img/bulbasaur.png" alt="">
-                <p>Nº001</p>
-                <h2>Bulbasaur</h2>
-                <div class="pokemon-type">Grass</div>
-                <div class="pokemon-type">Poison</div>
-            </div>
-            <div class="pokemon">
-                <img src="img/bulbasaur.png" alt="">
-                <p>Nº001</p>
-                <h2>Bulbasaur</h2>
-                <div class="pokemon-type">Grass</div>
-                <div class="pokemon-type">Poison</div>
-            </div>
-            <div class="pokemon">
-                <img src="img/bulbasaur.png" alt="">
-                <p>Nº001</p>
-                <h2>Bulbasaur</h2>
-                <div class="pokemon-type">Grass</div>
-                <div class="pokemon-type">Poison</div>
-            </div>
-            <div class="pokemon">
-                <img src="img/bulbasaur.png" alt="">
-                <p>Nº001</p>
-                <h2>Bulbasaur</h2>
-                <div class="pokemon-type">Grass</div>
-                <div class="pokemon-type">Poison</div>
-            </div>
+        <div id="content">            
         </div>
     </body>
 </html>
