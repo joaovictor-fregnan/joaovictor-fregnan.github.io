@@ -8,6 +8,7 @@ and open the template in the editor.
     <head>
         <meta charset="UTF-8">
         <title>Pokédex</title>
+        <link rel="icon" href="img/favicon.png" type="image/x-icon">
         <style>
             html, body
             {                
@@ -436,7 +437,7 @@ and open the template in the editor.
                        
                     if(pokemon.has_3d_model === 1)
                     {
-                        $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "<span onclick='iframeCreate(" + pokemon.number + ")'> 3D</span></h2>" + types + "</div>");
+                        $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "<span onclick='iframeCreate(" + pokemon.number + ")'> 3D model</span></h2>" + types + "</div>");
                     }
                     else
                     {
@@ -493,7 +494,11 @@ and open the template in the editor.
                 });
                 
                 $("#busca-button").click(function(){
-                    if($("#busca-nome-id").val() !== '')
+                    if($("#busca-nome-id").val() === '')
+                    {
+                        getNext12(1);
+                    }
+                    else
                     {
                         getPokemon($("#busca-nome-id").val());
                     }
