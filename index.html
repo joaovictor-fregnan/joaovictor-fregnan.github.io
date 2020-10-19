@@ -45,23 +45,63 @@ and open the template in the editor.
                 margin: 0;
             }
                                    
-            #filtros-1
+            #filtros
             {
-                width: 100%;
-                height: 20rem;                              
-                margin: auto;               
-                background-color: rgb(51, 51, 51);
-            }
-            
-            #filtros-2
-            {
-                width: 100%;
-                height: 20rem;                           
-                margin: auto;
+                width: 100%;                                              
+                margin: auto; 
                 margin-bottom: 6%;
-                background-color: rgb(150, 150, 150);
+                background-color: rgb(51, 51, 51);                
+                padding: 5% 2% 5% 2%;
+            }
+                                    
+            #filtros input[type='text']
+            {
+                float: left;
+                width: 60rem;                
+                margin: 0;
+                border: none;
+                padding: 1%;
+                border-radius: 1rem;
+                font-size: 4rem;
+                color: rgb(51, 51, 51);
             }
             
+            #filtros input[type='text']:focus
+            {
+                border: none;
+                outline: none;
+            }
+            
+            #filtros img
+            {
+                float: left;                
+                height: 7.5rem;
+                margin: 0 0 0 2%;
+                border-radius: 1rem;
+                background-color: orange;
+                padding: 0.5%;
+                cursor: pointer;
+            }
+            
+            #filtros select
+            {
+                float: right;
+                              
+                margin: 0.5% 4% 0 0;
+                border: none;
+                padding: 0.5% 1% 0.5% 1%;
+                border-radius: 1rem;
+                font-size: 4rem;
+                color: white;
+                background-color: black;
+            }
+            
+            #filtros select:focus
+            {
+                border: none;
+                outline: none;
+            }
+                                    
             #pokemons
             {
                 width: 100%;                             
@@ -198,41 +238,123 @@ and open the template in the editor.
         <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>        
         <script>
             
-            pokemons_arr = [];            
+            pokemons_arr = [0];
+            pokemons_arr_show = [];
             index = 1;
             
-            function getPokemon(id) 
-            {                
-                $.post("controllers/PokemonController.php",
+            function getPokemon(criterio) 
+            {    
+                $("#pokemons").html("");
+                /*$("#load-pokemons").hide();
+                $("#load-gif").show();*/
+                                                
+                pokemons_arr_show = [];
+                index = 0;
+                
+                pokemons_arr.slice(1, pokemons_arr.length).forEach(function(pokemon)
+                {                                                                                
+                    if(pokemon.name.toLowerCase().includes(criterio.toLowerCase()) || parseInt(pokemon.number) === parseInt(criterio))
+                    {
+                        pokemons_arr_show.push(pokemon);
+                    }           
+                });
+                
+                showPokemons();
+                
+                /*$("#load-pokemons").show();
+                $("#load-gif").hide();*/
+                
+                /*$.post("controllers/PokemonController.php",
                 {
                   acao: "getPokemon",
-                  id: id
+                  criterio: criterio
                 },
-                function(data, status){
-                    var pokemon = JSON.parse(data); 
-                   
-                    var types = "";
-                        
-                    pokemon.types.forEach(function(type)
-                    {                            
-                        
-                        
-                        types = types.concat("<div class='pokemon-type'>" + type + "</div>");                       
-                    });    
-                                     
-                   $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "</h2>" + types + "</div>");
-                });                
+                function(data)
+                {
+                    if(data !== 'false')
+                    {
+                        var pokemon = JSON.parse(data);                                        
+                        pokemons_arr.push(pokemon);               
+                        showPokemons();
+                    }                    
+                    
+                    $("#load-pokemons").show();
+                    $("#load-gif").hide();
+                });*/               
+            }
+            
+            function loadPokemons()
+            {
+                var inicio = [1, 101, 201, 301, 401, 501, 601, 701, 801];
+                var fim = [100, 200, 300, 400, 500, 600, 700, 800, 893];
+                                             
+                for(var i=0; i<inicio.length; i++)
+                {
+                    $.ajax({
+                        url: "data/pokemons" + inicio[i] + "-" + fim[i] + ".json",
+                        dataType: 'json',
+                        async: false,                        
+                        success: function(pokemons) 
+                        {
+                            pokemons.forEach(function(pokemon)
+                            {                            
+                                pokemons_arr.push(pokemon);                               
+                            });
+                        }
+                    });                                    
+                }              
             }
             
             function getNext12(start_id) 
-            {     
+            {  
+                var tipo = $("#tipos").val();
+                
+                /*$("#load-pokemons").hide();
+                $("#load-gif").show();*/
+        
+                if(start_id === 1)
+                {                   
+                    pokemons_arr_show = [];
+                    $("#pokemons").html("");
+                    $("#busca-nome-id").val("");
+                }
+                                                
+                var i = start_id;                
+                var count = 0;
+                                                                                
+                while(count < 12 && i < 894)
+                {                    
+                    if((tipo !== 'any' && pokemons_arr[i].types.includes(tipo)) || tipo === 'any')
+                    {
+                        pokemons_arr_show.push(pokemons_arr[i]); 
+                        index = pokemons_arr[i].number;
+                        count++;
+                    }                    
+                    i = i + 1;
+                }
+                
+                showPokemons();
+                
+                /*("#load-pokemons").show();
+                $("#load-gif").hide();*/
+                                                
+                /*if(start_id === 1)
+                {                   
+                    pokemons_arr = [];
+                    $("#pokemons").html("");
+                    $("#busca-nome-id").val("");
+                }
+                
+                var tipo = $("#tipos").val();
+                
                 $("#load-pokemons").hide();
                 $("#load-gif").show();
                 
                 $.post("controllers/PokemonController.php",
                 {
                   acao: "getNext12",
-                  start_id: start_id
+                  start_id: start_id,
+                  tipo: tipo
                 },
                 function(data)
                 {
@@ -240,25 +362,37 @@ and open the template in the editor.
                     
                     pokemons.forEach(function(pokemon)
                     {
-                        pokemons_arr.push(pokemon);                     
-                    });
-                    
-                    index += pokemons.length;
-                    
+                        pokemons_arr.push(pokemon);  
+                        index = pokemon.number;
+                    });                    
+                                        
                     showPokemons();
                     
                     $("#load-pokemons").show();
                     $("#load-gif").hide();
-                });            
+                });*/            
             }
             
             function showPokemons()
-            {
-                //pokemons_arr.sort(compareAZ);
-               
+            {                               
                 $("#pokemons").html("");
                 
-                pokemons_arr.forEach(function(pokemon)
+                switch($("#ordenacao").val())
+                {
+                    case 'AZ':
+                        pokemons_arr_show.sort(compareAZ);
+                        break;
+                    case 'ZA':
+                        pokemons_arr_show.sort(compareZA);
+                        break;
+                    case 'crescente':
+                        pokemons_arr_show.sort(compareCrescente);
+                        break;
+                    case 'decrescente':
+                        pokemons_arr_show.sort(compareDecrescente);                           
+                }
+                
+                pokemons_arr_show.forEach(function(pokemon)
                 {
                     var types = "";
                     pokemon.types.forEach(function(type)
@@ -307,7 +441,7 @@ and open the template in the editor.
                     else
                     {
                         $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "</h2>" + types + "</div>");
-                    }                            
+                    }                                        
                 });
             }
             
@@ -322,17 +456,47 @@ and open the template in the editor.
             }
             
             function iframeCreate(id)
-            {
-                
+            {                
                 var iframe = document.createElement("iframe");
                 iframe.setAttribute("src", "3d-html-models/3d-model" + id + ".html");                
                 document.body.appendChild(iframe);
                 $("#fechar-iframe").show();
             }
             
+            function compareCrescente(a, b)
+            {
+                if(parseInt(a.number) < parseInt(b.number))
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            
+            function compareDecrescente(a, b)
+            {
+                if(parseInt(b.number) < parseInt(a.number))
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            
             $(document).ready(function(){
                 $("#load-pokemons").click(function(){
-                    getNext12(index);
+                    getNext12(index+1);
+                });
+                
+                $("#busca-button").click(function(){
+                    if($("#busca-nome-id").val() !== '')
+                    {
+                        getPokemon($("#busca-nome-id").val());
+                    }
                 });
                 
                 $("#fechar-iframe").click(function()
@@ -343,12 +507,35 @@ and open the template in the editor.
                         iframes[i].parentNode.removeChild(iframes[i]);
                     }
                     $("#fechar-iframe").hide();                                        
+                }); 
+                
+                $("#tipos").change(function()
+                {                    
+                    getNext12(1);
                 });
-                                                
-                getNext12(index);                
-            });
-            
-                        
+                
+                $("#ordenacao").change(function()
+                {   
+                    switch($("#ordenacao").val())
+                    {
+                        case 'AZ':
+                            pokemons_arr_show.sort(compareAZ);
+                            break;
+                        case 'ZA':
+                            pokemons_arr_show.sort(compareZA);
+                            break;
+                        case 'crescente':
+                            pokemons_arr_show.sort(compareCrescente);
+                            break;
+                        case 'decrescente':
+                            pokemons_arr_show.sort(compareDecrescente);                           
+                    }                    
+                    showPokemons();
+                });
+                
+                loadPokemons();
+                getNext12(index);
+            });                    
                   
         </script>        
     </head>
@@ -357,10 +544,26 @@ and open the template in the editor.
             <div id="cabecalho">
                 <img src="img/pokedex-logo.png" alt="">
             </div>            
-            <div id="filtros-1"></div>
-            <div id="filtros-2"></div>
-            <div id="pokemons"></div>            
-                                     
+            <div id="filtros">
+                <input type="text" id="busca-nome-id" placeholder="Nome ou número do pokémon">
+                <img id="busca-button" src="img/search.png" alt="">                
+                <select id="ordenacao">
+                    <option value="crescente">Número (crescente)</option>
+                    <option value="decrescente">Número (decrescente)</option>
+                    <option value="AZ">Nome de A-Z</option>
+                    <option value="ZA">Nome de Z-A</option>
+                </select>
+                <select id=tipos>
+                    <option value="any" selected>Todos os tipos</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Grass">Grass</option>
+                    <option value="Fire">Fire</option>
+                    <option value="Water">Water</option>
+                    <option value="Electric">Electric</option>
+                </select>
+                <div style="clear: both;"></div>                
+            </div>            
+            <div id="pokemons"></div>                                     
             <input type="button" id="load-pokemons" value="Carregar mais Pokémons!">            
             <img id="load-gif" src="https://icon-library.com/images/loading-icon-animated-gif/loading-icon-animated-gif-15.jpg" alt="">
         </div>  
