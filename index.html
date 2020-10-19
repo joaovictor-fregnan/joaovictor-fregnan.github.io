@@ -133,6 +133,13 @@ and open the template in the editor.
                 text-align: left;
             }
             
+            .pokemon span
+            {                
+                color: red; 
+                font-size: 4rem;
+                cursor: pointer;
+            }
+            
             .pokemon-type
             {
                 width: 20%;                
@@ -146,11 +153,49 @@ and open the template in the editor.
                 margin: 0 2% 0 0;  
                 text-align: center;                
             }
+                     
+            iframe
+            {
+                position: fixed;
+                width: 200rem;
+                height: 200rem;
+                border: none;
+                left: 50%;
+                margin-left: -100rem;
+                top: 25%;                
+            }
             
+            #fechar-iframe
+            {
+                position: fixed;
+                top: 24%;
+                right: 26%;
+                padding: 0.5% 0.75% 0.5% 0.75%;
+                background-color: rgb(150, 150, 150);
+                border: 2px solid rgb(51, 51, 51);
+                color: white;
+                font-size: 4rem;
+                font-weight: bold;
+                border-radius: 5rem;
+                cursor: pointer;                            
+                z-index: 1;
+                display: none;
+            }
+            
+            #fechar-iframe:hover
+            {
+                background-color: red;
+            }
+            
+            #fechar-iframe:focus
+            {
+                border: none;
+                outline: none;
+            }
+                    
         </style>
         
-        <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
-        
+        <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>        
         <script>
             
             pokemons_arr = [];            
@@ -210,7 +255,7 @@ and open the template in the editor.
             function showPokemons()
             {
                 //pokemons_arr.sort(compareAZ);
-                
+               
                 $("#pokemons").html("");
                 
                 pokemons_arr.forEach(function(pokemon)
@@ -254,10 +299,15 @@ and open the template in the editor.
                                 types = types.concat("<div class='pokemon-type'>" + type + "</div>");
                         }                                               
                     });
-                    
-                    console.log(pokemon.name);
-                    
-                    $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "</h2>" + types + "</div>");
+                       
+                    if(pokemon.has_3d_model === 1)
+                    {
+                        $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "<span onclick='iframeCreate(" + pokemon.number + ")'> 3D</span></h2>" + types + "</div>");
+                    }
+                    else
+                    {
+                        $("#pokemons").append("<div class='pokemon'><img src='" + pokemon.img + "' alt=''><p>Nº " + pokemon.number + "</p><h2>" + pokemon.name + "</h2>" + types + "</div>");
+                    }                            
                 });
             }
             
@@ -271,28 +321,50 @@ and open the template in the editor.
                 return b.name.localeCompare(a.name);
             }
             
+            function iframeCreate(id)
+            {
+                
+                var iframe = document.createElement("iframe");
+                iframe.setAttribute("src", "3d-html-models/3d-model" + id + ".html");                
+                document.body.appendChild(iframe);
+                $("#fechar-iframe").show();
+            }
+            
             $(document).ready(function(){
                 $("#load-pokemons").click(function(){
                     getNext12(index);
                 });
                 
-                getNext12(index);
+                $("#fechar-iframe").click(function()
+                {                    
+                    var iframes = document.querySelectorAll('iframe');
+                    for (var i = 0; i < iframes.length; i++) 
+                    {
+                        iframes[i].parentNode.removeChild(iframes[i]);
+                    }
+                    $("#fechar-iframe").hide();                                        
+                });
+                                                
+                getNext12(index);                
             });
-                      
-        </script>
-        
+            
+                        
+                  
+        </script>        
     </head>
-    <body>
+    <body>         
         <div id="content">   
             <div id="cabecalho">
                 <img src="img/pokedex-logo.png" alt="">
             </div>            
             <div id="filtros-1"></div>
             <div id="filtros-2"></div>
-            <div id="pokemons"></div>
-            <input type="button" id="load-pokemons" value="Carregar mais Pokémons!">
+            <div id="pokemons"></div>            
+                                     
+            <input type="button" id="load-pokemons" value="Carregar mais Pokémons!">            
             <img id="load-gif" src="https://icon-library.com/images/loading-icon-animated-gif/loading-icon-animated-gif-15.jpg" alt="">
-        </div>
+        </div>       
+        <input type="button" id="fechar-iframe" value="X">    
     </body>
 </html>
 

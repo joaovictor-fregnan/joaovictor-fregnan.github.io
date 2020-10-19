@@ -39,6 +39,8 @@ class PokemonDAO
     
     function getNext12($start_id)
     {
+        $modelos_3d = scandir('../3d-html-models');                              
+                
         $api = new PokeApi;
         
         $pokemons_arr = array();
@@ -57,6 +59,15 @@ class PokemonDAO
             $pokemon = new Pokemon();            
             $pokemon->setName(ucfirst($pokemon_api->name));
             $pokemon->setNumber($i);
+                                    
+            if(in_array("3d-model".$i.".html", $modelos_3d))
+            {
+                $pokemon->setHas_3d_model(1);
+            }
+            else
+            {
+                $pokemon->setHas_3d_model(0);
+            }
 
             $types_arr = array();
             $types = $pokemon_api->types;
@@ -82,33 +93,6 @@ class PokemonDAO
     }
 }
 
-/*$api = new PokeApi;
-$pokemon_api = json_decode($api->pokemon(1));
-echo '<pre>';
-echo print_r($pokemon_api->sprites->other->{'official-artwork'}->front_default);
-echo '</pre>';*/
-
-//$api = new PokeApi;   
-//echo '<pre>';
-//echo print_r(json_decode($api->pokemon(800)));
-//echo '</pre>';
-
-//$pokemonDAO = new PokemonDAO();
-
-
-/*$pokemonDAO = new PokemonDAO();
-echo '<pre>';
-echo $pokemonDAO->getNext10(1);
-echo '</pre>';*/
-
-/*foreach($pokemons as $pokemon)
-{
-    echo "===== ".$pokemon->name." =====<br>";
-    $types = $pokemon->types;
-    foreach ($types as $type)
-    {
-        echo $type->type->name."<br>";
-    }
-    echo "<br><br>";
-}*/
+$pokemonDAO = new PokemonDAO();
+$pokemonDAO->getNext12(1);
 

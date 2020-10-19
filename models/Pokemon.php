@@ -6,7 +6,16 @@ class Pokemon
     public $name;    
     public $types;    
     public $img;
+    public $has_3d_model;
     
+    function getHas_3d_model() {
+        return $this->has_3d_model;
+    }
+
+    function setHas_3d_model($has_3d_model) {
+        $this->has_3d_model = $has_3d_model;
+    }
+        
     function getNumber() {
         return $this->number;
     }
